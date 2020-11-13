@@ -2,26 +2,35 @@ import json
 import csv
 import os
 import nltk
+from nltk.stem import PorterStemmer
 import itertools
 from collections import defaultdict
 from string import punctuation
 
-def get_file():
-    with open('Data\CORD-19\CORD-19\metadata.csv', encoding="utf8") as f_in:
+def get_files():
+    #create an instance of the algorithm which will do the stemming
+    porter_stemmer = PorterStemmer()
+    #open the metadata file
+    with open('C:/Users/Lennart Geertjes/IR_repo/IR/CORD-19/metadata.csv', encoding="utf8") as f_in:
         reader = csv.DictReader(f_in)
-        header = itertools.islice(reader, 2)
-        for row in header:
-            #access metadata
-            cord_uid = row['cord_uid'] #returns a string
-            title = row['title'] #returns a string
-            abstract = row['abstract'] #returns a string
+        header = itertools.islice(reader, 2) 
+        for row in header: #when iterating over the entire dataset, use reader
+            #get the title and change it into BoW representation
+            title = row['title'] 
+            tokenized_title = get_tokens(title)
+            stemmed_title = get_stems(tokenized_title, porter_stemmer)
 
-            tokenized_abstract = get_tokens(abstract)
-            print(tokenized_abstract, end = "\n\n")
+            #get the abstract from metadata.csv and change it into BoW representation
+            abstract_text = row['abstract'] 
+            tokenized_abstract = get_tokens(abstract_text)
+            stemmed_abstract = get_stems(tokenized_abstract, porter_stemmer)
+            
+            stemmed_abstract.extend(stemmed_title)
+            print(stemmed_abstract)
 
-def get_tokens(paragraph_text):
+def get_tokens(text):
     #tokenize the data
-    tokenized_text = nltk.word_tokenize(paragraph_text)
+    tokenized_text = nltk.word_tokenize(text)
     #make a list of stopwords that should be removed from the data
     words_to_remove = nltk.corpus.stopwords.words("english")
     #add punctuation to list of words that should be removed
@@ -29,10 +38,12 @@ def get_tokens(paragraph_text):
     #returns set of tokens that are not in words_to_remove
     return [t for t in set(tokenized_text) if not t in words_to_remove]
 
+def get_stems(text, stemmer):
+    return[stemmer.stem(t) for t in text]
 
 if __name__ == "__main__":
     #download necessary elements of nltk module
     nltk.download('punkt')
     nltk.download('stopwords')
-    get_file()
+    get_files()
 
