@@ -15,16 +15,16 @@ def get_files():
         reader = csv.DictReader(f_in)
         header = itertools.islice(reader, 1)
         for row in header: #when iterating over the entire dataset, use reader
-            full_stemmed_text = []
+            full_stemmed_dict = defaultdict(int)
             #get the title and change it into BoW representation
             title = row['title'] 
             tokenized_title = get_tokens(title)
-            stemmed_title = get_stems(tokenized_title, porter_stemmer)
+            get_stems(tokenized_title, porter_stemmer, full_stemmed_dict)
 
             #get the abstract from metadata.csv and change it into BoW representation
             abstract_text = row['abstract'] 
             tokenized_abstract = get_tokens(abstract_text)
-            stemmed_abstract = get_stems(tokenized_abstract, porter_stemmer)
+            get_stems(tokenized_abstract, porter_stemmer, full_stemmed_dict)
 
             #access full text 
             if row['pdf_json_files']:
@@ -35,10 +35,9 @@ def get_files():
                         #grab parts of the text 
                         for paragraphs in full_text_dict['body_text']:
                             tokenized_paragraph = get_tokens(paragraphs['text'])
-                            stemmed_paragraph = get_stems(tokenized_paragraph, porter_stemmer)
-                            full_stemmed_text.extend(stemmed_paragraph)
-                        print(full_stemmed_text)
-        full_stemmed_text.extend([stemmed_title, stemmed_abstract])            
+                            get_stems(tokenized_paragraph, porter_stemmer, full_stemmed_dict)                    
+                        [print(f"{key} : {value}") for key, value in full_stemmed_dict.items()]
+                   
 
 def get_tokens(text):
     #tokenize the data
@@ -48,10 +47,12 @@ def get_tokens(text):
     #add punctuation to list of words that should be removed
     words_to_remove.extend(list(punctuation))
     #returns set of tokens that are not in words_to_remove
-    return [t for t in tokenized_text if not t in words_to_remove]
+    return [t.lower() for t in tokenized_text if not t in words_to_remove]
 
-def get_stems(text, stemmer):
-    return[stemmer.stem(t) for t in text]
+def get_stems(text, stemmer, dict):
+    for t in text:
+        dict[stemmer.stem(t)] += 1
+    return dict
 
 if __name__ == "__main__":
     #download necessary elements of nltk module
