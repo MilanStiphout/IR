@@ -35,8 +35,9 @@ def get_files():
                         #grab parts of the text 
                         for paragraphs in full_text_dict['body_text']:
                             tokenized_paragraph = get_tokens(paragraphs['text'])
-                            get_stems(tokenized_paragraph, porter_stemmer, full_stemmed_dict)                    
-                        [print(f"{key} : {value}") for key, value in full_stemmed_dict.items()]
+                            get_stems(tokenized_paragraph, porter_stemmer, full_stemmed_dict)
+                    
+                    [print(f"{key} : {value}") for key, value in full_stemmed_dict.items()]
                    
 
 def get_tokens(text):

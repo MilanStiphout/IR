@@ -25,8 +25,8 @@ def get_files():
             abstract_text = row['abstract'] 
             tokenized_abstract = get_tokens(abstract_text)
             get_stems(tokenized_abstract, porter_stemmer, abstract_stemmed_dict)
-            
-            [print(f"{key} : {value}") for key, value in abstract_stemmed_dict.items()]
+           
+        [print(f"{key} : {value}") for key, value in abstract_stemmed_dict.items()]
 
 def get_tokens(text):
     #tokenize the data
