@@ -127,3 +127,22 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#all the files from the database
+CORD-19/*
+
+#all the preprocessed files 
+preprocessed_files/preprocessed_full_texts/*.csv
+preprocessed_files/preprocessed_abstracts/*.csv
+
+#database files
+Names.csv
+qrels.csv
+sample_submission.csv
+topics-rnd3.csv
+docids-rnd3.txt
+
+#internal settings
+settings.json
+
+
