@@ -9,7 +9,7 @@ from collections import defaultdict
 def get_files():
     with open(os.getcwd() + '/CORD-19/metadata.csv', encoding="utf8") as f_in:
         reader = csv.DictReader(f_in)
-        header = itertools.islice(reader, 10)
+        header = itertools.islice(reader, 1)
         with open(os.getcwd() + '/CORD-19/preprocessed.csv', mode= 'w', encoding="utf8") as new_file:
             writer = csv.DictWriter(new_file, fieldnames=['id', 'title', 'abstract', 'fulltext'] , ) 
             writer.writeheader()
@@ -21,10 +21,12 @@ def get_files():
                             writer.writerow({'id':      input_file['cord_uid'],
                                             'title':    preprocess(input_file['title']),
                                             'abstract': preprocess(input_file['abstract']),
-                                            'fulltext': [preprocess(" ".join(p['text'] for p in json.load(input_json)['body_text']))]})
+                                            'fulltext': preprocess(" ".join(p['text'] for p in json.load(input_json)['body_text']))})
                 run += 1
                 if run % 1000 == 0:
                     print("Finished {} runs".format(run))
+
+    
 
 if __name__ == "__main__":
     #download necessary elements of nltk module
