@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 #all the files from the database
+code/CORD-19/*
 CORD-19/*
 
 #all the preprocessed files 
