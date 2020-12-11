@@ -1,6 +1,5 @@
 import nltk
 from nltk.stem import PorterStemmer
-from collections import defaultdict
 from string import punctuation
 
 def get_tokens(text):
@@ -16,10 +15,10 @@ def get_stems(text):
         stemmed_text.append(stemmer.stem(t))
     return stemmed_text
 
-def update_dict(dict, stemmed_list):
+def update_dict(dictionary, stemmed_list):
     for t in stemmed_list:
-        dict[t] += 1
-
+        dictionary[t] += 1
+    return dictionary
 
 def preprocess(text):
     return get_stems(get_tokens(text))
