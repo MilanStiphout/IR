@@ -18,13 +18,10 @@ def get_files():
                 if input_file['pdf_json_files']:
                     for json_path in input_file['pdf_json_files'].split('; '):
                         with open(os.getcwd() + '/CORD-19/' + json_path) as input_json:
-                            if input_file['pdf_json_files']:
-                                for json_path in input_file['pdf_json_files'].split('; '):
-                                    with open(os.getcwd() + '/CORD-19/' + json_path) as input_json:
-                                        writer.writerow({'id':      input_file['cord_uid'],
-                                                        'title':    preprocess(input_file['title']),
-                                                        'abstract': preprocess(input_file['abstract']),
-                                                        'fulltext': [preprocess(" ".join(p['text'] for p in json.load(input_json)['body_text']))]})
+                            writer.writerow({'id':      input_file['cord_uid'],
+                                            'title':    preprocess(input_file['title']),
+                                            'abstract': preprocess(input_file['abstract']),
+                                            'fulltext': [preprocess(" ".join(p['text'] for p in json.load(input_json)['body_text']))]})
             
 if __name__ == "__main__":
     #download necessary elements of nltk module
