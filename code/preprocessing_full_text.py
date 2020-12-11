@@ -13,8 +13,8 @@ def get_files():
         with open(os.getcwd() + '/CORD-19/preprocessed.csv', mode= 'w', encoding="utf8") as new_file:
             writer = csv.DictWriter(new_file, fieldnames=['id', 'title', 'abstract', 'fulltext'] , ) 
             writer.writeheader()
-            
-            for input_file in header: 
+            run = 0
+            for input_file in reader: #when running full database: change 'header' into 'reader'
                 if input_file['pdf_json_files']:
                     for json_path in input_file['pdf_json_files'].split('; '):
                         with open(os.getcwd() + '/CORD-19/' + json_path) as input_json:
@@ -22,7 +22,10 @@ def get_files():
                                             'title':    preprocess(input_file['title']),
                                             'abstract': preprocess(input_file['abstract']),
                                             'fulltext': [preprocess(" ".join(p['text'] for p in json.load(input_json)['body_text']))]})
-            
+                run += 1
+                if run % 1000 == 0:
+                    print("Finished {} runs".format(run))
+
 if __name__ == "__main__":
     #download necessary elements of nltk module
     nltk.download('punkt')
