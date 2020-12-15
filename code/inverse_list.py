@@ -27,10 +27,11 @@ def get_docs_for_term(term, inv_list):
 def increment_doc_occurrence(term, doc, inv_list):
     for pair in inv_list[term]:
         if pair[0] == doc:
-            pair[1] += 1
+            pair = (pair[0], pair[1] + 1)
             return inv_list
     raise Exception("Error: didn't find {} in the occurrence list of document {}".format(term, doc))
 
 
-#print(get_docs_for_term("x", {"x": [(5, 2)]}))
-print(count_occurrences("x", {"x": [(5, 2), (6, 10)]}))
+if __name__ == "__main__":
+    #print(get_docs_for_term("x", {"x": [(5, 2)]}))
+    print(docs_occurring("x", {"x": [(5, 2), (6, 10)]}))
