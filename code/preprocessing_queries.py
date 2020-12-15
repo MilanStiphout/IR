@@ -13,19 +13,19 @@ def get_file():
             writer = csv.DictWriter(new_file, fieldnames=['id', 'query', 'question', 'narrative']) 
             writer.writeheader()
             for row in reader: 
-                
                 writer.writerow({'id' : row['topic-id'], 
-                                'query' :  pf.update_dict(defaultdict(int), pf.preprocess(row['query'])), 
-                                'question' : pf.update_dict(defaultdict(int), pf.preprocess(row['question'])),
-                                'narrative' : pf.update_dict(defaultdict(int), pf.preprocess(row['narrative']))                                         
+                                'query' :  pf.update_dict(pf.preprocess(row['query'])), 
+                                'question' : pf.update_dict(pf.preprocess(row['question'])),
+                                'narrative' : pf.update_dict(pf.preprocess(row['narrative']))                                         
                                 })
-        
+       
+    
     with open(os.getcwd()+ '/CORD-19/preprocessed_queries.csv') as f_in:
         reader = csv.DictReader(f_in)
         for line in reader:
-            query = line['query']
-            print(eval(query))
-
+            print(line['query'])
+            query_dict = eval(line['query'])
+            
 
 if __name__ == "__main__":
     get_file()

@@ -15,9 +15,13 @@ def get_stems(text):
         stemmed_text.append(stemmer.stem(t))
     return stemmed_text
 
-def update_dict(dictionary, stemmed_list):
+def update_dict(stemmed_list):
+    dictionary = {}
     for t in stemmed_list:
-        dictionary[t] += 1
+        if t not in dictionary:
+            dictionary[t] = 1  
+        else:
+            dictionary[t] += 1
     return dictionary
 
 def preprocess(text):
