@@ -10,7 +10,7 @@ def df(term, inv_list):
             
 
 def idf(term, nr_of_docs, inv_list):
-    return math.log10((nr_of_docs + 1)/df(term, inv_list))
+    return math.log10((nr_of_docs)/df(term, inv_list) + 1)
 
 
 def tf_idf(query, bow, inv_list):
