@@ -1,4 +1,5 @@
 import os
+import sys
 import csv
 from collections import defaultdict
 from inverse_list import docs_occurring, increment_doc_occurrence
@@ -24,6 +25,7 @@ def write_inv_list(inv_list):
 
 
 def build_model():
+    csv.field_size_limit(sys.maxsize)
     inverse_list = {}
     with open(os.getcwd() + '/CORD-19/preprocessed.csv', encoding='utf8') as file_list, \
          open(os.getcwd() + "/CORD-19/abstract-model.csv", mode='w', encoding='utf8') as abstr_model, \
@@ -35,7 +37,11 @@ def build_model():
         abst_writer.writeheader()
         full_writer.writeheader()
 
+        i = 0
         for f in reader:
+            i += 1
+            if i % 100 == 0:
+                print("Finished {} runs".format(i))
             bow = defaultdict(int)
             for word in eval(f['title']) + eval(f['abstract']):
                 inverse_list, bow = index_word(word, inverse_list, bow, f)
