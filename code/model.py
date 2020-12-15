@@ -2,11 +2,12 @@ import os
 import csv
 from collections import defaultdict
 from inverse_list import docs_occurring, increment_doc_occurrence
+import itertools
 
 def index_word(word, inverse_list, d, f):
     if word in inverse_list:
         if f['id'] in docs_occurring(word, inverse_list):
-            inverse_list = increment_doc_occurrence(word, d, inverse_list)
+            inverse_list = increment_doc_occurrence(word, f['id'], inverse_list)
         else:
             inverse_list[word] += [(f['id'], 1)]
     else:
@@ -27,19 +28,21 @@ def build_model():
     with open(os.getcwd() + '/CORD-19/preprocessed.csv', encoding='utf8') as file_list, \
          open(os.getcwd() + "/CORD-19/abstract-model.csv", mode='w', encoding='utf8') as abstr_model, \
          open(os.getcwd() + "/CORD-19/full-model.csv", mode='w', encoding='utf8') as full_model:
+        reader = csv.DictReader(file_list)
         fields = ['id', 'model']
         abst_writer = csv.DictWriter(abstr_model, fieldnames=fields,)
         full_writer = csv.DictWriter(full_model, fieldnames=fields,)
         abst_writer.writeheader()
         full_writer.writeheader()
 
-        for f in file_list:
+        for f in reader:
             bow = defaultdict(int)
-            for word in f['title'] + f['abstract']:
+            for word in eval(f['title']) + eval(f['abstract']):
                 inverse_list, bow = index_word(word, inverse_list, bow, f)
             abst_writer.writerow({'id': f['id'], 'model': bow})
 
-            for word in f['fulltext']:
+            # Extra [0] is here due to input error earlier that makes f['fulltext] look like [[content]] rather than [content]
+            for word in eval(f['fulltext'])[0]:
                 inverse_list, bow = index_word(word, inverse_list, bow, f)
             full_writer.writerow({'id': f['id'], 'model': bow})
     
