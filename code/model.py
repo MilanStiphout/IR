@@ -21,7 +21,7 @@ def index_word(word, inverse_list, d, f):
     return inverse_list, d
 
 def write_inv_list(inv_list):
-    with open(os.getcwd() + "/CORD-19/inverse_list.csv", mode='w', encoding='utf8') as inv_list_file:
+    with open(os.getcwd() + "/CORD-19/inverse_list.csv", mode='w', newline='', encoding='utf8') as inv_list_file:
         writer = csv.DictWriter(inv_list_file, fieldnames=['term', 'occurrences'])
         writer.writeheader()
         for term in inv_list:
