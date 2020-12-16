@@ -13,7 +13,11 @@ def index_word(word, inverse_list, d, f):
             inverse_list[word] += [(f['id'], 1)]
     else:
         inverse_list[word] = [(f['id'], 1)]
-    d[word] += 1
+    if word in d:
+        d[word] += 1
+    else:
+        d[word] = 1
+
     return inverse_list, d
 
 def write_inv_list(inv_list):
@@ -42,7 +46,7 @@ def build_model():
             i += 1
             if i % 100 == 0:
                 print("Finished {} runs".format(i))
-            bow = defaultdict(int)
+            bow = {}
             for word in eval(f['title']) + eval(f['abstract']):
                 inverse_list, bow = index_word(word, inverse_list, bow, f)
             abst_writer.writerow({'id': f['id'], 'model': bow})
