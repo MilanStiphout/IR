@@ -29,11 +29,12 @@ def write_inv_list(inv_list):
 
 
 def build_model():
-    csv.field_size_limit(sys.maxsize)
+    csv.field_size_limit(9223372036854775807)
     inverse_list = {}
     with open(os.getcwd() + '/CORD-19/preprocessed.csv', encoding='utf8') as file_list, \
-         open(os.getcwd() + "/CORD-19/abstract-model.csv", mode='w', encoding='utf8') as abstr_model, \
-         open(os.getcwd() + "/CORD-19/full-model.csv", mode='w', encoding='utf8') as full_model:
+         open(os.getcwd() + "/CORD-19/abstract-model.csv", mode='w', newline='', encoding='utf8') as abstr_model, \
+         open(os.getcwd() + "/CORD-19/full-model.csv", mode='w', newline='', encoding='utf8') as full_model:
+
         reader = csv.DictReader(file_list)
         fields = ['id', 'model']
         abst_writer = csv.DictWriter(abstr_model, fieldnames=fields,)
