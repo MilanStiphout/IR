@@ -32,7 +32,7 @@ def build_model():
     csv.field_size_limit(9223372036854775807)
     inverse_list = {}
     with open(os.getcwd() + '/CORD-19/preprocessed.csv', encoding='utf8') as file_list, \
-         open(os.getcwd() + "/CORD-19/full-model-2.csv", mode='w', newline='', encoding='utf8') as full_model:
+         open(os.getcwd() + "/CORD-19/full-model.csv", mode='w', newline='', encoding='utf8') as full_model:
         reader = csv.DictReader(file_list)
 
         fields = ['id', 'model']
@@ -44,13 +44,11 @@ def build_model():
             i += 1
             if i % 100 == 0:
                 print("Finished {} runs".format(i))
-            # We are already done until 12600. Start from there.
-            if i > 12600:
-                bow = {}
-                # Extra [0] is here due to input error earlier that makes f['fulltext] look like [[content]] rather than [content]
-                for word in eval(f['title']) + eval(f['abstract']) + eval(f['fulltext'])[0]:
-                    inverse_list, bow = index_word(word, inverse_list, bow, f)
-                full_writer.writerow({'id': f['id'], 'model': bow})
+            bow = {}
+            # Extra [0] is here due to input error earlier that makes f['fulltext] look like [[content]] rather than [content]
+            for word in eval(f['title']) + eval(f['abstract']) + eval(f['fulltext'])[0]:
+                inverse_list, bow = index_word(word, inverse_list, bow, f)
+            full_writer.writerow({'id': f['id'], 'model': bow})
     
     write_inv_list(inverse_list)
 
