@@ -23,10 +23,11 @@ def tf_idf(query, bow, inv_list):
 def doc_length(doc):
     return sum(doc.values())
 
-bow1 = {"this": 1, "is": 1, "a": 2, "sample": 1}
-bow2 = {"this": 1, "is": 1, "another": 2, "example": 3}
+if __name__ == "__main__":
+    bow1 = {"this": 1, "is": 1, "a": 2, "sample": 1}
+    bow2 = {"this": 1, "is": 1, "another": 2, "example": 3}
 
-inv_list = {"this": [(1, 1), (2, 1)], "is": [(1, 1), (2, 1)], "a": [(1, 2)], "sample": [(1, 1)], "another": [(1, 2)],  "example": [(2, 3)]}
+    inv_list = {"this": [(1, 1), (2, 1)], "is": [(1, 1), (2, 1)], "a": [(1, 2)], "sample": [(1, 1)], "another": [(1, 2)],  "example": [(2, 3)]}
 
-#print(tf("example", bow2))
-#print(tf_idf({"example": 1}, bow2, inv_list))
+    #print(tf("example", bow2))
+    #print(tf_idf({"example": 1}, bow2, inv_list))
