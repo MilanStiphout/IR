@@ -1,55 +1,41 @@
-import json
-import csv
+from bm25 import bm25, avdl
 import os
-import nltk
-import itertools
-import preprocessing_functions as pf
-from collections import defaultdict
+import csv
+from collections import OrderedDict 
 
-def get_files():
-    #open the metadata file
-    with open(os.getcwd() + '/CORD-19/metadata.csv', encoding="utf8") as f_in:
-        reader = csv.DictReader(f_in)
-        header = itertools.islice(reader, 1)
-        for row in header: 
-            #when iterating over the entire dataset, use reader
-            full_stemmed_dict = defaultdict(int)
 
-            #make this a def
-            #get the title and change it into BoW representation
-            pf.update_dict(full_stemmed_dict, pf.preprocess(row['title']))
+def run_vsm(model_path, results_path):
+    with open(os.getcwd() + "/CORD-19/inverse_list.csv", encoding = 'utf8') as inv_list_file, \
+         open(os.getcwd() + results_path, mode= 'w',encoding = 'utf8', newline = '') as res_vsm, \
+         open(os.getcwd()+ '/CORD-19/preprocessed_queries.csv', encoding = 'utf8') as query_file:
+            inv_list_reader = csv.DictReader(inv_list_file)
+            query_reader = csv.DictReader(query_file)
+            with open(os.getcwd() + model_path, encoding = 'utf8') as bow_file:
+                bow_reader = csv.DictReader(bow_file)
+                docs = [bow['abs_model'] for bow in bow_reader]
+                avdl = avdl(docs)
+                print(avdl)
 
-            #get the abstract from metadata.csv and change it into BoW representation
-            pf.update_dict(full_stemmed_dict, pf.preprocess(row['abstract']))
-            
-            #Source
-            #access full text 
-            if row['pdf_json_files']:
-                for json_path in row['pdf_json_files'].split('; '):
-                    with open(os.getcwd() + '/CORD-19/' + json_path) as f_json:
-                        full_text_dict = json.load(f_json) 
-
-                        #grab parts of the text 
-                        for paragraphs in full_text_dict['body_text']:
-                            pf.update_dict(full_stemmed_dict, pf.preprocess(paragraphs['text']))
-                        
-                        #write it to csv here  
-                        file_name =  row['cord_uid'] + '-full_text.csv'
-                        with open(os.getcwd() + '/preprocessed_files/preprocessed_full_texts/' + file_name, 'w', newline='', encoding="utf8") as new_file:
-                            writer = csv.DictWriter(new_file, fieldnames=['Term', 'Frequency'] , ) 
-                            writer.writeheader()
-                            for key, value in full_stemmed_dict.items():
-                                writer.writerow({'Term': key,
-                                                 'Frequency': value})
-
-def read_file(file_name):
-    with open('C:/Users/Lennart Geertjes/IR_repo/IR/preprocessed_files/preprocessed_full_texts/' + file_name, encoding="utf8") as preprocessed_file:
-        reader = csv.DictReader(preprocessed_file)
-                            
+            for query_line in query_reader:
+                scores = {}
+                rank = 1
+                with open(os.getcwd() + model_path, encoding = 'utf8') as bow_file:
+                    bow_reader = csv.DictReader(bow_file)
+                    for bow in bow_reader:
+                        score = bm25(eval(query_line['narrative']), bow['abs_model'], inv_list_file, avdl)
+                        scores[bow['id']]= score
+                
+                sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse= True)
+                for [key, value] in sorted_scores:
+                #query-id Q0 document-id rank score STANDARD
+                    res_vsm.write('{} Q0 {} {} {} STANDARD \n'.format(query_line['id'],
+                                                                                key,
+                                                                                rank,
+                                                                                str(value)
+                                                                                )
+                                            )
+                    rank += 1
 
 if __name__ == "__main__":
-    #download necessary elements of nltk module
-    nltk.download('punkt')
-    nltk.download('stopwords')
-    get_files()
-
+    run_vsm("/CORD-19/index.csv", "/CORD-19/res_vsm_abstract.txt")
+    #run_vsm("/CORD-19/full-model.csv", "/CORD-19/res_vsm_full_text.txt")
